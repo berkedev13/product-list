@@ -11,7 +11,7 @@ export default function ProductList() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/products")
+      .get("https://product-list-1dn8.onrender.com/products")
       .then((res) => setProducts(res.data || []))
       .catch((err) => console.error("Products fetch error:", err));
   }, []);
