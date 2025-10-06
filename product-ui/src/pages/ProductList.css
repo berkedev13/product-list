@@ -1,11 +1,27 @@
+.page-wrapper {
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+  padding: 20px 0;
+  overflow-x: hidden;
+}
+
+.page-title {
+  font-family: "Avenir Book", sans-serif;
+  font-size: 45px;
+  font-weight: 400;
+  color: #000;
+  margin-bottom: 40px;
+  letter-spacing: 0.5px;
+}
+
 .product-slider-container {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 10px;
+  margin: 0 auto;
   gap: 12px;
 }
 
@@ -27,17 +43,15 @@
 
 .product-slider {
   overflow: hidden;
-  width: calc(100% - 120px);
+  flex: 1;
 }
 
 .product-slider-inner {
   display: flex;
   transition: transform 0.45s cubic-bezier(.22,.9,.38,1);
-  will-change: transform;
 }
 
 .product-card {
-  flex: 0 0 25%;
   box-sizing: border-box;
   padding: 12px;
   text-align: center;
@@ -87,72 +101,48 @@
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
-  padding: 0;
-  box-sizing: border-box;
 }
-.color-btn.active {
-  border-color: #111;
-}
-
-.product-rating {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #666;
-}
-
-@media (max-width: 1000px) {
-  .product-card { flex: 0 0 50%; }
-  .product-slider-inner {
-  }
-}
-@media (max-width: 520px) {
-  .product-card { flex: 0 0 100%; }
-}
-
-.page-wrapper {
-  width: 100%;
-  text-align: center;
-  margin-top: 40px;
-}
-
-.page-title {
-  font-family: "Avenir Book", sans-serif;
-  font-size: 45px;
-  font-weight: 400;
-  color: #000;
-  margin-bottom: 40px;
-  letter-spacing: 0.5px;
-}
+.color-btn.active { border-color: #111; }
 
 .rating-section {
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 10px;
 }
-
-.stars {
-  display: flex;
-  gap: 3px;
-}
-
-.star.dynamic {
-  font-size: 18px;
-  position: relative;
+.star {
+  font-size: 16px;
   color: #ccc;
-  display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #E6CA97 var(--fill),
-    #ccc var(--fill)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+.star.dynamic::before {
+  content: "★";
+  color: gold;
+  position: absolute;
+  overflow: hidden;
+  width: var(--fill);
+  top: 0;
+  left: 0;
 }
 
-.rating-text {
-  font-size: 13px;
-  color: #555;
-  font-family: "Avenir", sans-serif;
+@media (max-width: 600px) and (orientation: portrait) {
+  .product-card {
+    flex: 0 0 100%;
+  }
+  .product-image-wrap {
+    height: 200px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .product-card {
+    flex: 0 0 50%;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1200px) {
+  .product-card {
+    flex: 0 0 33.3333%;
+  }
 }

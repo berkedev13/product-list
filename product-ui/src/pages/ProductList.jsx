@@ -6,8 +6,27 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [selectedColors, setSelectedColors] = useState({});
   const [scrollIndex, setScrollIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(4);
 
-  const VISIBLE_COUNT = 4;
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      const width = window.innerWidth;
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
+      if (width <= 600 && isPortrait) setVisibleCount(1);
+      else if (width <= 900) setVisibleCount(2);
+      else if (width <= 1200) setVisibleCount(3);
+      else setVisibleCount(4);
+    };
+
+    updateVisibleCount();
+    window.addEventListener("resize", updateVisibleCount);
+    window.addEventListener("orientationchange", updateVisibleCount);
+    return () => {
+      window.removeEventListener("resize", updateVisibleCount);
+      window.removeEventListener("orientationchange", updateVisibleCount);
+    };
+  }, []);
 
   useEffect(() => {
     axios
@@ -20,7 +39,7 @@ export default function ProductList() {
     setSelectedColors((prev) => ({ ...prev, [productName]: colorKey }));
   };
 
-  const maxIndex = Math.max(0, products.length - VISIBLE_COUNT);
+  const maxIndex = Math.max(0, products.length - visibleCount);
   const handleScroll = (direction) => {
     let newIndex = scrollIndex + (direction === "right" ? 1 : -1);
     if (newIndex < 0) newIndex = 0;
@@ -28,12 +47,10 @@ export default function ProductList() {
     setScrollIndex(newIndex);
   };
 
-  const computePrice = (p) => {
-    if (p?.price !== undefined && p?.price !== null && !isNaN(Number(p.price))) {
-      return Number(p.price).toFixed(2);
-    }
-    return "N/A";
-  };
+  const computePrice = (p) =>
+    p?.price !== undefined && !isNaN(Number(p.price))
+      ? Number(p.price).toFixed(2)
+      : "N/A";
 
   const computeRating = (p) => {
     const popularityRaw = Number(p.popularityScore) || 0;
@@ -43,7 +60,6 @@ export default function ProductList() {
 
   const renderStars = (rating) => {
     const stars = [];
-
     for (let i = 1; i <= 5; i++) {
       const fillLevel = Math.min(Math.max(rating - (i - 1), 0), 1);
       stars.push(
@@ -56,7 +72,6 @@ export default function ProductList() {
         </span>
       );
     }
-
     return stars;
   };
 
@@ -85,18 +100,25 @@ export default function ProductList() {
         <div className="product-slider">
           <div
             className="product-slider-inner"
-            style={{ transform: `translateX(-${scrollIndex * (100 / VISIBLE_COUNT)}%)` }}
+            style={{
+              transform: `translateX(-${scrollIndex * (100 / visibleCount)}%)`,
+            }}
           >
             {products.map((p, idx) => {
               const productName = p.name || `product-${idx}`;
               const availableColors = p.images ? Object.keys(p.images) : [];
-              const defaultColor = selectedColors[productName] || (availableColors[0] ?? "yellow");
+              const defaultColor =
+                selectedColors[productName] ||
+                (availableColors[0] ?? "yellow");
               const imageUrl = p.images ? p.images[defaultColor] : "";
-
               const rating = Number(computeRating(p));
 
               return (
-                <div className="product-card" key={productName}>
+                <div
+                  className="product-card"
+                  key={productName}
+                  style={{ flex: `0 0 ${100 / visibleCount}%` }}
+                >
                   <div className="product-image-wrap">
                     {imageUrl ? (
                       <img src={imageUrl} alt={productName} loading="lazy" />
@@ -112,10 +134,14 @@ export default function ProductList() {
                     {availableColors.map((colorKey) => (
                       <button
                         key={colorKey}
-                        className={`color-btn ${defaultColor === colorKey ? "active" : ""}`}
+                        className={`color-btn ${
+                          defaultColor === colorKey ? "active" : ""
+                        }`}
                         onClick={() => handleColorSelect(productName, colorKey)}
                         title={colorKey}
-                        style={{ backgroundColor: colorHex[colorKey] || "#ccc" }}
+                        style={{
+                          backgroundColor: colorHex[colorKey] || "#ccc",
+                        }}
                         aria-pressed={defaultColor === colorKey}
                       />
                     ))}
